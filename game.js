@@ -1,106 +1,294 @@
-// Game variables
+let bricks = [];
+let left = [];
+let top1 = [];
+let bot = [];
+let lefttop = [];
+let lefttopcorner = [];
+let rightTuile = [];
+let midTuile = [];
+let leftTuile = [];
+let leftbot = [];
+let leftb = [];
+let cornerRT = [];
+let cornerbc = [];
+let right = [];
+let rightb = [];
+let leftCorner = [];    
+let tilesGroup = [];
 let player;
+let landImage;
+let tileWidth = 40;
+let tileHeight = 40;
 let obstacles = [];
-let projectiles = [];
 let gridSize = 10;
-let cols, rows;
-let grid = [];
-let islandSize = 2000;
 let zoomFactor = 4;
-let playerImage, playerImage2;
 let currentImage = 0;
-let lastToggleTime = 0; // Moment du dernier changement d'image
-let toggleInterval = 250; // Intervalle de 250ms pour changer l'image
-let land; // Image de terrain
+let lastToggleTime = 0;
+let toggleInterval = 250;
 let num = 1;
 let vPressedPreviously = false;
 function setup() {
-    // Create the game canvas (16:9 aspect ratio)
     createCanvas(windowWidth, windowHeight);
-    cols = islandSize / gridSize;
-    rows = islandSize / gridSize;
-    land = loadImage('land.svg'); // Charger l'image du terrain
-    // Create the grid with Perlin noise for island shape
-    for (let i = 0; i < cols; i++) {
-        grid[i] = [];
-        for (let j = 0; j < rows; j++) {
-            let noiseVal = noise(i * 0.01, j * 0.01);
-            if (noiseVal > 0.4) {
-                grid[i][j] = land; // Remplacer la couleur par l'image du terrain pour la terre
-            } else {
-                grid[i][j] = color(0, 0, 255); // Eau
+
+    playerImage = loadImage('./assets/perso1.png');
+    playerImage2 = loadImage('./assets/perso2.png');
+    playerImage3 = loadImage('./assets/perso3.png');
+    playerImage4 = loadImage('./assets/perso4.png');
+    rightImage = loadImage('./assets/right.png');
+    leftCornerImage = loadImage('./assets/cornerleft.png');
+    leftImage = loadImage('./assets/left.png');
+    topImage = loadImage('./assets/top.png');
+    botImage = loadImage('./assets/bot.png');
+    rightCornerImage = loadImage('./assets/rightcorner.png');
+    rightbcImage = loadImage('./assets/rightbc.png');
+    rightbImage = loadImage('./assets/rightb.png');
+    leftbImage = loadImage('./assets/leftb.png');
+    lefttopImage = loadImage('./assets/lefttop.png');
+    lefttopcornerImage = loadImage('./assets/lefttopcorner.png');
+    leftbotImage = loadImage('./assets/leftbotcorner.png');
+    leftTuileImage = loadImage('./assets/lefttuile.png');
+    rightTuileImage = loadImage('./assets/righttuile.png');
+    midTuileImage = loadImage('./assets/midtuile.png');
+
+    landImage = loadImage('./assets/land.svg');    // Image pour les briques
+    // Carte en grille
+    tilesGroup = [
+        '...........wtttc...........',
+        '...........l===o..........',
+        '.......wttty===ittc.....',
+        '.......l=======azeo.......',
+        '.......l==========o.......',
+        '.......l==========o.......',
+        '.......l==========o.......',
+        '.......l==========o.......',
+        '.......l==========o.......',
+        '.......l==========o.......',
+        '.......nbbbd===xbbr........',
+        '...........l===o..........',
+        '...........nbbbr.......',
+    ];
+
+    // Création des briques
+    for (let row = 0; row < tilesGroup.length; row++) {
+        for (let col = 0; col < tilesGroup[row].length; col++) {
+            if (tilesGroup[row][col] === '=') {
+                // Ajout d'une brique
+                bricks.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
             }
+            else if (tilesGroup[row][col] === 'o') {
+                // Ajout d'un obstacle
+                right.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'i') {
+                // Ajout d'un obstacle
+                leftCorner.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'l') {
+                // Ajout d'un obstacle
+                left.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 't') {
+                // Ajout d'un obstacle
+                top1.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'b') {
+                // Ajout d'un obstacle
+                bot.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'c') {
+                // Ajout d'un obstacle
+                cornerRT.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'x') {
+                // Ajout d'un obstacle
+                cornerbc.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'r') {
+                // Ajout d'un obstacle
+                rightb.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'n') {
+                // Ajout d'un obstacle
+                leftb.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'w') {
+                // Ajout d'un obstacle
+                lefttop.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'y') {
+                // Ajout d'un obstacle
+                lefttopcorner.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'd') {
+                // Ajout d'un obstacle
+                leftbot.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'a') {
+                // Ajout d'un obstacle
+                leftTuile.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'e') {
+                // Ajout d'un obstacle
+                rightTuile.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
+            }
+            else if (tilesGroup[row][col] === 'z') {
+                // Ajout d'un obstacle
+                midTuile.push({
+                    x: col * tileWidth,
+                    y: row * tileHeight,
+                    w: tileWidth,
+                    h: tileHeight,
+                });
         }
     }
-    // Generate the island map
-    for (let i = 0; i < cols; i++) {
-        grid[i] = [];
-        for (let j = 0; j < rows; j++) {
-            let distanceToEdge = min(i, j, cols - i - 1, rows - j - 1);
-            let maxWaterBorder = floor(random(5, 11));
-            if (distanceToEdge < maxWaterBorder) {
-                grid[i][j] = color(0, 0, 255); // Water
-            } else {
-                grid[i][j] = land; // Land
-            }
-        }
     }
-    playerImage = loadImage('perso1.png');
-    playerImage2 = loadImage('perso2.png');
-    playerImage3 = loadImage('perso3.png');
-    playerImage4 = loadImage('perso4.png');
-    // Create the player sprite
     player = new Sprite();
-    player.width = gridSize;
-    player.height = gridSize;
+    player.width = tileWidth;
+    player.height = tileHeight;
     player.image = playerImage;
-    player.x = width / 2;
-    player.y = height / 2;
+
+    // Placer le joueur au centre de la carte
+    player.x = (tilesGroup[0].length * tileWidth) / 2;
+    player.y = (tilesGroup.length * tileHeight) / 2;
+
     player.scale = 0.010;
+
     // Set up basic player movement
     player.friction = 0.1;
     player.maxSpeed = 4;
+}
 
-    // Create green obstacles (no more gray obstacles)
-obstacleImage = loadImage('pixil-frame-0_3.png');
-for (let i = 0; i < 60; i++) {
-    let obstacle = new Sprite();
-    obstacle.width = 60;
-    obstacle.height = 60;
-    obstacle.image = obstacleImage;
-    let x, y;
-    do {
-        x = floor(random(1, cols - 1)) * gridSize;
-        y = floor(random(1, rows - 1)) * gridSize;
-    } while (grid[x / gridSize][y / gridSize] !== land); // Vérifier si la case contient de la terre (image)
-    obstacle.x = x;
-    obstacle.y = y;
-    obstacle.immovable = true;
-    obstacles.push(obstacle); // Ajoutez l'obstacle à la liste
-}
-}
 
 function draw() {
-    // Clear background
-    background(220);
-
-    // Apply zoom and center on player
-    translate(width / 2, height / 2); // Center the canvas
-    scale(zoomFactor);               // Apply the zoom
-    translate(-player.x, -player.y); // Center on the player
-
-    // Draw the grid with images and water
-    for (let i = 0; i < cols; i++) {
-        noStroke();
-        for (let j = 0; j < rows; j++) {
-            if (grid[i][j] instanceof p5.Image) {
-                image(grid[i][j], i * gridSize, j * gridSize, gridSize, gridSize); // Draw land image
-            } else {
-                fill(grid[i][j]); // Fill with color (water)
-                rect(i * gridSize, j * gridSize, gridSize, gridSize);
-            }
-        }
+    background(0,0,255);
+    translate(width / 2, height / 2);
+    scale(zoomFactor);
+    translate(-player.x, -player.y);
+    // Dessiner les briques avec des images
+    for (let brick of bricks) {
+        image(landImage, brick.x, brick.y, brick.w, brick.h); // Dessiner chaque brique avec l'image
     }
+    for (let lefts of right) {
+        image(rightImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of leftCorner) {
+        image(leftCornerImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of left) {
+        image(leftImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of top1) {
+        image(topImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of bot) {
+        image(botImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of cornerRT) {
+        image(rightCornerImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of cornerbc) {
+        image(rightbcImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of rightb) {
+        image(rightbImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of leftb) {
+        image(leftbImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of lefttop) {
+        image(lefttopImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of lefttopcorner) {
+        image(lefttopcornerImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of leftbot) {
+        image(leftbotImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of leftTuile) {
+        image(leftTuileImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of rightTuile) {
+        image(rightTuileImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+    for (let lefts of midTuile) {
+        image(midTuileImage, lefts.x, lefts.y, lefts.w, lefts.h);
+    }
+
 
     // Player movement controls
     let newVelX = 0;
@@ -114,7 +302,6 @@ function draw() {
         newVelX = 2;
         player.mirror.x = false;
         maybeTogglePlayerImage();
-
     }
     if (kb.pressing('up')) {
         newVelY = -2;
@@ -124,72 +311,54 @@ function draw() {
         newVelY = 2;
         maybeTogglePlayerImage();
     }
-    if (kb.pressing('v') && !vPressedPreviously) { // Vérifie si 'v' est pressé et pas encore traité
-        vPressedPreviously = true; // Marque comme enfoncée
+    if (mouseIsPressed && mouseButton === RIGHT && !vPressedPreviously) {
+        vPressedPreviously = true;
         if (num >= 2) {
             num = 0;
         }
-        num = num + 1;
-        console.log(num);
+        num += 1;
         togglePlayerImage();
 
-        // Réinitialise vPressedPreviously après 100ms
+        // Reset key press after 200ms
         setTimeout(() => {
             vPressedPreviously = false;
-        }, 100);
-    }
-    // Calculate new position
-    let newX = player.x + newVelX;
-    let newY = player.y + newVelY;
-
-    // Check for collisions with obstacles
-    let collision = false;
-    for (let obstacle of obstacles) {
-        let distance = dist(newX, newY, obstacle.x, obstacle.y);
-        if (distance < gridSize + 10) {
-            collision = true;
-            break;
-        }
+        }, 200);
     }
 
-    // Check if the new position is in the water (blue border)
-    let col = floor(newX / gridSize);
-    let row = floor(newY / gridSize);
-    if (grid[col][row] === color(0, 0, 255)) {
-        collision = true;
-    }
+    // Calcul de la nouvelle position
+    let newPlayerX = player.x + newVelX;
+    let newPlayerY = player.y + newVelY;
 
-    // Update player position if no collision
-    if (!collision) {
-        player.x = newX;
-        player.y = newY;
-    }
+    // Vérification des collisions avec les zones autorisées (=)
+    let canMove = bricks.some(brick => {
+        return (
+            newPlayerX + player.width / 2 > brick.x &&
+            newPlayerX - player.width / 2 < brick.x + brick.w &&
+            newPlayerY + player.height / 2 > brick.y &&
+            newPlayerY - player.height / 2 < brick.y + brick.h
+        );
+    });
 
-    // Prevent player from leaving the grid
-    player.x = constrain(player.x, gridSize, (cols - 1) * gridSize - player.width);
-    player.y = constrain(player.y, gridSize, (rows - 1) * gridSize - player.height);
+    if (canMove) {
+        player.x = newPlayerX;
+        player.y = newPlayerY;
+    }
+    
+
 }
 
 function maybeTogglePlayerImage() {
-    // Vérifie si le bouton 'v' est pressé
-    if (kb.pressing('v')) {
-        togglePlayerImage(); // Change immédiatement l'image
-    } else {
-        // Vérifie si 250ms sont passées depuis le dernier changement
-        if (millis() - lastToggleTime > toggleInterval) {
-            togglePlayerImage(); // Change l'image
-            lastToggleTime = millis(); // Met à jour le dernier changement d'image
-        }
+    if (millis() - lastToggleTime > toggleInterval) {
+        togglePlayerImage();
+        lastToggleTime = millis();
     }
 }
 
-
 function togglePlayerImage() {
-    currentImage = (currentImage + 1) % 2; // Change l'image
-    if (num === 1){
+    currentImage = (currentImage + 1) % 2;
+    if (num === 1) {
         player.image = currentImage === 0 ? playerImage : playerImage2;
-    }
-    else if (num === 2){
+    } else if (num === 2) {
         player.image = currentImage === 0 ? playerImage3 : playerImage4;
     }
 }
